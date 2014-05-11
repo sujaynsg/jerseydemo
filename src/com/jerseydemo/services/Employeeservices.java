@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -11,7 +12,9 @@ import com.jerseydemo.representation.Employeedetails;
 
 public class Employeeservices {
 
-	public String allEmployeedetails(Connection connection) {
+	public ArrayList<Employeedetails> allEmployeedetails(Connection connection) {
+
+		ArrayList<Employeedetails> employees = new ArrayList();
 
 		ResultSet rs = null;
 		try {
@@ -21,27 +24,21 @@ public class Employeeservices {
 			String status = "<h2>Employee List</h2>\n";
 			rs = statement.executeQuery(squery);
 			while (rs.next()) {
-				flag = 1;
-				status += "<h5>" + rs.getString(1) + " - " + rs.getString(2)
-						+ "</h5>";
-				status += "\n";
+				Employeedetails employeeDetail = new Employeedetails();
+				employeeDetail.setEmployeeId(rs.getString(1));
+				employeeDetail.setEmployeeName(rs.getString(2));
+				employees.add(employeeDetail);
 			}
-
-			if (flag == 0) {
-				return "<h3>No data are avaliable!!!</h3>";
-			} else {
-				return status;
-			}
-
 		} catch (SQLException sqle) {
-			return "Error Occured";
+
 		} catch (Exception e) {
-			return "Error Occured";
+
 		}
+		return employees;
 
 	}
 
-	public String getEmployee(Employeedetails employeeDetail,
+	public Employeedetails getEmployee(Employeedetails employeeDetail,
 			Connection connection) {
 		// TODO Auto-generated method stub
 
@@ -53,22 +50,26 @@ public class Employeeservices {
 					+ employeeId + "';";
 			rs = statement.executeQuery(squery);
 			if (rs.next()) {
-				return "<h2>Details of Employee # " + employeeId
-						+ " </h2><p><h3>Employee name: " + rs.getString(2)
-						+ "</h3>";
+				/*
+				 * return "<h2>Details of Employee # " + employeeId + " </h2><p><h3>Employee
+				 * name: " + rs.getString(2) + "</h3>";
+				 */
+				employeeDetail.setEmployeeName(rs.getString(2));
+
 			} else {
-				return "<h3>No such data!!!</h3>";
+				employeeDetail.setEmployeeName("0");
 			}
 
 		} catch (SQLException sqle) {
-			return "Error Occured";
+
 		} catch (Exception e) {
-			return "Error Occured";
+
 		}
+		return employeeDetail;
 
 	}
 
-	public String addEmployee(Employeedetails employeeDetail,
+	public Employeedetails addEmployee(Employeedetails employeeDetail,
 			Connection connection) {
 		// TODO Auto-generated method stub
 		try {
@@ -87,19 +88,20 @@ public class Employeeservices {
 				String squery = "insert into employeeregister values('"
 						+ employeeId + "', '" + employeeName + "');";
 				int a = statement.executeUpdate(squery);
-				return "<h2>Added Emp # " + employeeName + "<h2>";
+				return employeeDetail;
 			} else {
-				return "<h3> Emp # " + employeeId + "is already present </h3>";
+				return employeeDetail;
 			}
 
 		} catch (SQLException sqle) {
-			return "Error Occured";
+
 		} catch (Exception e) {
-			return "Error Occured";
+
 		}
+		return employeeDetail;
 	}
 
-	public String updateEmployee(Employeedetails employeeDetail,
+	public Employeedetails updateEmployee(Employeedetails employeeDetail,
 			Connection connection) {
 		// TODO Auto-generated method stub
 
@@ -115,42 +117,38 @@ public class Employeeservices {
 
 			if (a == 0) {
 
-				return "<h3>No such data!!!</h3>";
+				return employeeDetail;
 			} else {
-				return "<h2>Update Emp #" + employeeId + " name as "
-						+ employeeName + "</h2>";
+				return employeeDetail;
 			}
 
 		} catch (SQLException sqle) {
-			return "Error Occured";
+
 		} catch (Exception e) {
-			return "Error Occured";
+
 		}
+		return employeeDetail;
 
 	}
 
-	public String deleteEmployee(Employeedetails employeeDetail,
+	public Employeedetails deleteEmployee(Employeedetails employeeDetail,
 			Connection connection) {
 
 		try {
+			employeeDetail = getEmployee(employeeDetail, connection);
 			String employeeId = employeeDetail.getEmployeeId();
 			Statement statement = connection.createStatement();
 			String squery = "delete from employeeregister where employeeid ='"
 					+ employeeId + "';";
 			int a = statement.executeUpdate(squery);
 
-			if (a == 0) {
-				return "<h3>No such data!!!</h3>";
-			} else {
-				return "<h2>Details of Employee # " + employeeId + "is deleted";
-			}
-
 		} catch (SQLException sqle) {
-			return "Error Occured";
+
 		} catch (Exception e) {
 			System.out.println("Exception occured in Employeeserivce class");
-			return "Error Occured";
+
 		}
+		return employeeDetail;
 
 	}
 

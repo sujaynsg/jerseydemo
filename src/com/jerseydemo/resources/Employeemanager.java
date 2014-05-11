@@ -1,4 +1,5 @@
 package com.jerseydemo.resources;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -14,64 +15,73 @@ import com.jerseydemo.representation.Employeedetails;
 import com.jerseydemo.services.Employeeservices;
 import com.jerseydemo.dao.JerseyDAOFactory;
 import java.sql.Connection;
+import java.util.ArrayList;
 
 @Path("employees")
-
 public class Employeemanager {
-	
-	
+
 	Connection connection = JerseyDAOFactory.createconnection();
-	
+
 	Employeedetails employeeDetail = new Employeedetails();
 	Employeeservices employeeServices = new Employeeservices();
-	String status ;
-	
-	
+	String status;
+	ArrayList<Employeedetails> employees = new ArrayList();
+
 	@GET
-	@Produces("text/html")
-	public String list() {
-		status = employeeServices.allEmployeedetails(connection);
-		return status;
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArrayList<Employeedetails> list() {
+		employees = employeeServices.allEmployeedetails(connection);
+		return employees;
 	}
-	
+
 	@Path("/{employeeid}")
 	@GET
-	@Produces("text/html")
-	public String find(@PathParam("employeeid") String employeeId){
+	@Produces(MediaType.APPLICATION_JSON)
+	public Employeedetails find(@PathParam("employeeid")
+	String employeeId) {
 		employeeDetail.setEmployeeId(employeeId);
-		status = employeeServices.getEmployee(employeeDetail,connection);
-		return status;
+		employeeDetail = employeeServices.getEmployee(employeeDetail,
+				connection);
+		return employeeDetail;
 	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-   
-	public String createnew(@FormParam("employeeid") String employeeId, @FormParam("employeename") String employeeName){
+	@Produces(MediaType.APPLICATION_JSON)
+	public Employeedetails createnew(@FormParam("employeeid")
+	String employeeId, @FormParam("employeename")
+	String employeeName) {
 		employeeDetail.setEmployeeId(employeeId);
 		employeeDetail.setEmployeeName(employeeName);
-		status = employeeServices.addEmployee(employeeDetail,connection);
-		return status;
+		employeeDetail = employeeServices.addEmployee(employeeDetail,
+				connection);
+		return employeeDetail;
 	}
-	
+
 	@Path("/{employeeid}")
 	@PUT
-  	@Produces("text/html")
-  	public String update(@PathParam("employeeid") String employeeId, @FormParam("employeename") String employeeName) {
+	@Produces(MediaType.APPLICATION_JSON)
+	public Employeedetails update(@PathParam("employeeid")
+	String employeeId, @FormParam("employeename")
+	String employeeName) {
 		employeeDetail.setEmployeeId(employeeId);
-	   	employeeDetail.setEmployeeName(employeeName);
-	   	status= employeeServices.updateEmployee(employeeDetail, connection);
-	   	return status;
-	   
+		employeeDetail.setEmployeeName(employeeName);
+		employeeDetail = employeeServices.updateEmployee(employeeDetail,
+				connection);
+		return employeeDetail;
+
 	}
-   
+
 	@Path("/{employeeid}")
 	@DELETE
-	@Produces("text/html")
-	public String delete(@PathParam("employeeid") String employeeId){
+	@Produces(MediaType.APPLICATION_JSON)
+	public Employeedetails delete(@PathParam("employeeid")
+	String employeeId) {
 		employeeDetail.setEmployeeId(employeeId);
-		status = employeeServices.deleteEmployee(employeeDetail,connection);
-		return status;
-	   
+		employeeDetail = employeeServices.deleteEmployee(employeeDetail,
+				connection);
+		return employeeDetail;
+
 	}
-   
+
 }
